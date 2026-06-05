@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Pernocentro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginPantalla" class="login-container">
+
+    <div class="login-box">
+
+        <h1>Inventario Pernocentro</h1>
+        <p>Inicio de sesión</p>
+
+        <input type="text" id="usuario" placeholder="Usuario">
+        <input type="password" id="clave" placeholder="Contraseña">
+
+        <button class="primary" onclick="iniciarSesion()">
+            Ingresar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- SISTEMA -->
+
+<div id="sistema" class="app oculto">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="icon">🏪</div>
+
+            <div>
+                <h2>Inventario</h2>
+                <p>Pernocentro</p>
+            </div>
+        </div>
+
+        <button class="nav active" onclick="mostrarSeccion('inicio')">
+            ⌂ Inicio
+        </button>
+
+        <button class="nav" onclick="mostrarSeccion('agregar')">
+            ＋ Agregar producto
+        </button>
+
+        <button class="nav" onclick="mostrarSeccion('bajoStock')">
+            ⚠ Bajo stock
+        </button>
+
+        <button class="nav" onclick="mostrarSeccion('configuracion')">
+            ⚙ Configuración
+        </button>
+
+        <button class="cerrar" onclick="cerrarSesion()">
+            Cerrar sesión
+        </button>
+
+    </aside>
+
+    <main class="content">
+
+        <!-- INICIO -->
+
+        <section id="inicio" class="section active">
+
+            <div class="top">
+                <h1>Inventario de Productos</h1>
+
+                <button onclick="mostrarSeccion('agregar')" class="primary">
+                    ＋ Agregar producto
+                </button>
+            </div>
+
+            <input
+                type="text"
+                id="busqueda"
+                placeholder="Buscar producto..."
+                oninput="buscarProducto()"
+            >
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Cantidad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaProductos"></tbody>
+
+            </table>
+
+            <p id="contador"></p>
+
+        </section>
+
+        <!-- AGREGAR -->
+
+        <section id="agregar" class="section">
+
+            <h1>Agregar nuevo producto</h1>
+
+            <label>Nombre del producto</label>
+
+            <input type="text" id="nombre">
+
+            <label>Categoría</label>
+
+            <select id="categoria">
+                <option value="">Seleccionar categoría</option>
+                <option>Herramientas</option>
+                <option>Ferretería</option>
+                <option>Pinturas</option>
+                <option>Construcción</option>
+            </select>
+
+            <label>Cantidad disponible</label>
+
+            <input type="number" id="cantidad">
+
+            <button class="primary" onclick="agregarProducto()">
+                Guardar producto
+            </button>
+
+            <button onclick="mostrarSeccion('inicio')">
+                Cancelar
+            </button>
+
+        </section>
+
+        <!-- EDITAR -->
+
+        <section id="editar" class="section">
+
+            <h1>Modificar producto</h1>
+
+            <input type="hidden" id="indiceEditar">
+
+            <label>Nombre del producto</label>
+
+            <input type="text" id="editarNombre">
+
+            <label>Categoría</label>
+
+            <select id="editarCategoria">
+                <option>Herramientas</option>
+                <option>Ferretería</option>
+                <option>Pinturas</option>
+                <option>Construcción</option>
+            </select>
+
+            <label>Cantidad disponible</label>
+
+            <input type="number" id="editarCantidad">
+
+            <button class="primary" onclick="guardarEdicion()">
+                Actualizar cambios
+            </button>
+
+            <button onclick="mostrarSeccion('inicio')">
+                Cancelar
+            </button>
+
+        </section>
+
+        <!-- BAJO STOCK -->
+
+        <section id="bajoStock" class="section">
+
+            <h1>Productos con bajo stock</h1>
+
+            <p class="info">
+                Productos con cantidad menor o igual a 10 unidades.
+            </p>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Cantidad</th>
+                        <th>Mínimo</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaBajoStock"></tbody>
+
+            </table>
+
+        </section>
+
+        <!-- CONFIGURACION -->
+
+        <section id="configuracion" class="section">
+
+            <h1>Configuración</h1>
+
+            <div class="config-box">
+
+                <h3>Información del sistema</h3>
+
+                <p>
+                    Sistema de inventario digital desarrollado para Pernocentro.
+                </p>
+
+                <p>
+                    Usuario activo: <strong>Administrador</strong>
+                </p>
+
+                <p>
+                    Productos registrados:
+                    <strong id="totalProductos"></strong>
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<div id="mensaje" class="mensaje"></div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

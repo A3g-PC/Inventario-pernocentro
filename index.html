@@ -8,123 +8,328 @@
 </head>
 <body>
 
-<div id="loginPantalla" class="login-container">
-    <div class="login-box">
-        <h1>Inventario Pernocentro</h1>
-        <p>Inicio de sesión</p>
+<div id="loginPantalla" class="login-page">
 
-        <input type="text" id="usuario" placeholder="Usuario">
-        <input type="password" id="clave" placeholder="Contraseña">
+    <div class="login-left">
+        <div class="brand-box">
+            <h1>Pernocentro</h1>
+            <p>Sistema avanzado de inventario</p>
+            <div class="linea"></div>
+        </div>
 
-        <button class="primary" onclick="iniciarSesion()">Ingresar</button>
+        <div class="logo-empresa">
+            <img src="img/Pernocentro.png" alt="Logo Pernocentro">
+        </div>
     </div>
+
+    <div class="login-right">
+        <div class="login-card">
+            <div class="lock-icon">🔒</div>
+
+            <h2>Bienvenido</h2>
+            <p class="login-subtitle">Inicia sesión para continuar</p>
+
+            <input type="text" id="usuario" placeholder="Usuario">
+            <input type="password" id="clave" placeholder="Contraseña">
+
+            <button class="login-btn" onclick="iniciarSesion()">Ingresar</button>
+
+            <div class="login-footer">
+                <span>Acceso autorizado únicamente</span>
+            </div>
+
+            <div class="security-boxes">
+                <div>
+                    <strong>Seguro</strong>
+                    <p>Datos protegidos</p>
+                </div>
+                <div>
+                    <strong>Confiable</strong>
+                    <p>Información actualizada</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div id="sistema" class="app oculto">
 
     <aside class="sidebar">
         <div class="logo">
-            <div class="icon">🏪</div>
+            <img src="img/Pernocentro.png" alt="Logo Pernocentro" class="sidebar-logo-img">
+
             <div>
-                <h2>Inventario</h2>
-                <p>Pernocentro</p>
+                <h2>Pernocentro</h2>
+                <p id="rolActivo">Usuario</p>
             </div>
         </div>
 
-        <button class="nav active" onclick="mostrarSeccion('inicio')">⌂ Inicio</button>
-        <button class="nav" onclick="mostrarSeccion('agregar')">＋ Agregar producto</button>
-        <button class="nav" onclick="mostrarSeccion('bajoStock')">⚠ Bajo stock</button>
-        <button class="nav" onclick="mostrarSeccion('configuracion')">⚙ Configuración</button>
+        <button class="nav active" onclick="mostrarSeccion('dashboard')">Panel principal</button>
+        <button class="nav" onclick="mostrarSeccion('inventario')">Inventario</button>
+        <button class="nav admin-only" onclick="mostrarSeccion('agregar')">Agregar producto</button>
+        <button class="nav" onclick="mostrarSeccion('bajoStock')">Bajo stock</button>
+        <button class="nav admin-only" onclick="mostrarSeccion('proveedores')">Proveedores</button>
+        <button class="nav" onclick="mostrarSeccion('historial')">Historial</button>
+        <button class="nav" onclick="mostrarSeccion('configuracion')">Configuración</button>
+
         <button class="cerrar" onclick="cerrarSesion()">Cerrar sesión</button>
     </aside>
 
     <main class="content">
 
-        <section id="inicio" class="section active">
-            <div class="top">
-                <h1>Inventario de Productos</h1>
-                <button onclick="mostrarSeccion('agregar')" class="primary">＋ Agregar producto</button>
+        <section id="dashboard" class="section active">
+            <h1>Panel de inventario</h1>
+
+            <div class="cards">
+                <div class="card">
+                    <h3 id="totalProductos">0</h3>
+                    <p>Productos registrados</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="totalUnidades">0</h3>
+                    <p>Unidades disponibles</p>
+                </div>
+
+                <div class="card warning">
+                    <h3 id="totalBajoStock">0</h3>
+                    <p>Productos con bajo stock</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="totalProveedores">0</h3>
+                    <p>Proveedores activos</p>
+                </div>
             </div>
 
-            <input type="text" id="busqueda" placeholder="Buscar producto..." oninput="buscarProducto()">
+            <h2>Productos que requieren reposición</h2>
 
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Stock mínimo</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody id="dashboardBajoStock"></tbody>
+            </table>
+        </section>
+
+        <section id="inventario" class="section">
+            <div class="top">
+                <h1>Inventario general</h1>
+                <button class="primary admin-only" onclick="mostrarSeccion('agregar')">
+                    Agregar producto
+                </button>
+            </div>
+
+            <div class="filters">
+                <input type="text" id="busqueda" placeholder="Buscar producto..." oninput="filtrarProductos()">
+
+                <select id="filtroCategoria" onchange="filtrarProductos()">
+                    <option value="">Todas las categorías</option>
+                    <option>Herramientas</option>
+                    <option>Pernos</option>
+                    <option>Tornillos</option>
+                    <option>Pinturas</option>
+                    <option>Construcción</option>
+                    <option>Otros materiales</option>
+                </select>
+
+                <select id="filtroEstado" onchange="filtrarProductos()">
+                    <option value="">Todos los estados</option>
+                    <option>Disponible</option>
+                    <option>Bajo stock</option>
+                    <option>Agotado</option>
+                </select>
+
+                <select id="filtroProveedor" onchange="filtrarProductos()"></select>
+            </div>
+
+            <button onclick="exportarCSV()">Exportar inventario CSV</button>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
                         <th>Categoría</th>
                         <th>Cantidad</th>
-                        <th>Acciones</th>
+                        <th>Stock mínimo</th>
+                        <th>Proveedor</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th class="admin-only-col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaProductos"></tbody>
             </table>
-
-            <p id="contador"></p>
         </section>
 
         <section id="agregar" class="section">
-            <h1>Agregar nuevo producto</h1>
+            <h1>Agregar producto</h1>
 
-            <label>Nombre del producto</label>
-            <input type="text" id="nombre">
+            <div class="form-grid-producto">
 
-            <label>Categoría</label>
-            <select id="categoria">
-                <option value="">Seleccionar categoría</option>
-                <option>Herramientas</option>
-                <option>Ferretería</option>
-                <option>Pinturas</option>
-                <option>Construcción</option>
-            </select>
+                <div class="campo">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre">
+                </div>
 
-            <label>Cantidad disponible</label>
-            <input type="number" id="cantidad">
+                <div class="campo">
+                    <label>Categoría</label>
+                    <select id="categoria">
+                        <option value="">Seleccionar categoría</option>
+                        <option>Herramientas</option>
+                        <option>Pernos</option>
+                        <option>Tornillos</option>
+                        <option>Pinturas</option>
+                        <option>Construcción</option>
+                        <option>Otros materiales</option>
+                    </select>
+                </div>
 
-            <button class="primary" onclick="agregarProducto()">Guardar producto</button>
-            <button onclick="mostrarSeccion('inicio')">Cancelar</button>
+                <div class="campo">
+                    <label>Cantidad disponible</label>
+                    <input type="number" id="cantidad">
+                </div>
+
+                <div class="campo">
+                    <label>Stock mínimo</label>
+                    <input type="number" id="stockMinimo" value="10">
+                </div>
+
+                <div class="campo">
+                    <label>Proveedor</label>
+                    <select id="proveedorProducto"></select>
+                </div>
+
+            </div>
+
+            <div class="botones-form">
+                <button class="primary" onclick="agregarProducto()">Guardar producto</button>
+                <button onclick="mostrarSeccion('inventario')">Cancelar</button>
+            </div>
         </section>
 
         <section id="editar" class="section">
-            <h1>Modificar producto</h1>
+            <h1>Editar producto</h1>
 
             <input type="hidden" id="indiceEditar">
 
-            <label>Nombre del producto</label>
-            <input type="text" id="editarNombre">
+            <div class="form-grid-producto">
 
-            <label>Categoría</label>
-            <select id="editarCategoria">
-                <option>Herramientas</option>
-                <option>Ferretería</option>
-                <option>Pinturas</option>
-                <option>Construcción</option>
-            </select>
+                <div class="campo">
+                    <label>Nombre</label>
+                    <input type="text" id="editarNombre">
+                </div>
 
-            <label>Cantidad disponible</label>
-            <input type="number" id="editarCantidad">
+                <div class="campo">
+                    <label>Categoría</label>
+                    <select id="editarCategoria">
+                        <option>Herramientas</option>
+                        <option>Pernos</option>
+                        <option>Tornillos</option>
+                        <option>Pinturas</option>
+                        <option>Construcción</option>
+                        <option>Otros materiales</option>
+                    </select>
+                </div>
 
-            <button class="primary" onclick="guardarEdicion()">Actualizar cambios</button>
-            <button onclick="mostrarSeccion('inicio')">Cancelar</button>
+                <div class="campo">
+                    <label>Cantidad disponible</label>
+                    <input type="number" id="editarCantidad">
+                </div>
+
+                <div class="campo">
+                    <label>Stock mínimo</label>
+                    <input type="number" id="editarStockMinimo">
+                </div>
+
+                <div class="campo">
+                    <label>Proveedor</label>
+                    <select id="editarProveedorProducto"></select>
+                </div>
+
+            </div>
+
+            <div class="botones-form">
+                <button class="primary" onclick="guardarEdicion()">Actualizar producto</button>
+                <button onclick="mostrarSeccion('inventario')">Cancelar</button>
+            </div>
         </section>
 
         <section id="bajoStock" class="section">
-            <h1>Productos con bajo stock</h1>
-
+            <h1>Alertas de bajo stock</h1>
             <p class="info">
-                Productos con cantidad menor o igual a 10 unidades.
+                Se muestran productos agotados o con cantidad menor o igual al stock mínimo.
             </p>
 
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
+                        <th>Producto</th>
                         <th>Cantidad</th>
-                        <th>Mínimo</th>
+                        <th>Stock mínimo</th>
+                        <th>Proveedor sugerido</th>
+                        <th>Prioridad</th>
                     </tr>
                 </thead>
                 <tbody id="tablaBajoStock"></tbody>
+            </table>
+        </section>
+
+        <section id="proveedores" class="section">
+            <h1>Gestión de proveedores</h1>
+
+            <input type="hidden" id="indiceProveedor">
+
+            <div class="form-grid">
+                <input type="text" id="nombreProveedor" placeholder="Nombre del proveedor">
+                <input type="text" id="telefonoProveedor" placeholder="Teléfono">
+                <input type="email" id="correoProveedor" placeholder="Correo electrónico">
+                <input type="text" id="direccionProveedor" placeholder="Dirección">
+                <input type="text" id="productosProveedor" placeholder="Productos que ofrece">
+
+                <select id="estadoProveedor">
+                    <option>Activo</option>
+                    <option>Inactivo</option>
+                </select>
+            </div>
+
+            <button class="primary" onclick="guardarProveedor()">Guardar proveedor</button>
+            <button onclick="limpiarProveedor()">Cancelar</button>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Proveedor</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Productos</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProveedores"></tbody>
+            </table>
+        </section>
+
+        <section id="historial" class="section">
+            <h1>Historial de movimientos</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorial"></tbody>
             </table>
         </section>
 
@@ -132,18 +337,10 @@
             <h1>Configuración</h1>
 
             <div class="config-box">
-                <h3>Información del sistema</h3>
-
-                <p>Sistema de inventario digital desarrollado para Pernocentro.</p>
-
+                <p>Sistema desarrollado para Pernocentro.</p>
                 <p>Base de datos: <strong>Firebase Firestore</strong></p>
-
-                <p>Usuario activo: <strong>Administrador</strong></p>
-
-                <p>
-                    Productos registrados:
-                    <strong id="totalProductos">0</strong>
-                </p>
+                <p>Usuario activo: <strong id="usuarioActivoTexto"></strong></p>
+                <p>Rol: <strong id="rolTexto"></strong></p>
             </div>
         </section>
 
@@ -153,6 +350,5 @@
 <div id="mensaje" class="mensaje"></div>
 
 <script type="module" src="app.js"></script>
-
 </body>
 </html>
